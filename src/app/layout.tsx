@@ -3,6 +3,7 @@ import { Inter, Sarabun } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import NavBar from "@/components/NavBar";
+import { Toaster } from "sonner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           <main className="flex-grow flex-1">{children}</main>
           <Footer />
         </div>
+        <Toaster richColors closeButton={true} />
       </body>
     </html>
   );
