@@ -8,6 +8,8 @@ export default function Landing() {
   const [error, setError] = useState<string | null>(null);
   const [shortUrl, setShortUrl] = useState<string | null>(null);
 
+  const baseUrl = process.env.NEXT_PUBLIC_URL;
+
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
@@ -25,7 +27,7 @@ export default function Landing() {
       }
 
       const data = await res.json();
-      const url: string = `http://localhost:3000/api/${data.shortenUrl.short_url}`;
+      const url: string = `${baseUrl}/${data.shortenUrl.short_url}`;
       setShortUrl(url);
     } catch (error: any) {
       // Capture the error message to display to the user
