@@ -41,8 +41,8 @@ export default function Landing() {
   };
 
   return (
-    <div className="w-full mt-12 max-w-6xl grid place-items-center grid-cols-2">
-      <div className="flex flex-col gap-y-8">
+    <div className="h-full w-full max-w-6xl flex place-items-center gap-8">
+      <div className="flex flex-col gap-y-8 w-full">
         <div className="flex flex-col gap-y-2">
           <p className="text-5xl">Create Short URL!</p>
           <span className="text-xl text-gray-400">
@@ -117,7 +117,7 @@ export default function Landing() {
           </form>
         )}
       </div>
-      <Image width={500} height={500} src="/hero.svg" alt="hero image"></Image>
+      <Image width={400} height={400} src="/hero.svg" alt="hero image" />
     </div>
   );
 }

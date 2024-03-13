@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className}  h-full relative`}>
-        <div className="relative flex flex-col min-h-screen">
+        <div className="relative flex flex-col min-h-screen h-screen">
           <NavBar />
           <main className="flex-grow flex-1">{children}</main>
           <Footer />
