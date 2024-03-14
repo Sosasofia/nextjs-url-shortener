@@ -5,8 +5,8 @@ import { useState } from "react";
 
 export default function Landing() {
   const [urlState, setUrlState] = useState<string>("");
-  const [error, setError] = useState<string | null>(null);
   const [shortUrl, setShortUrl] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const baseUrl = process.env.NEXT_PUBLIC_URL;
 
@@ -23,16 +23,16 @@ export default function Landing() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to submit the data. Please try again.");
+        const error = await res.json();
+        throw new Error(error.message);
       }
 
       const data = await res.json();
-      const url: string = `${baseUrl}/${data.shortenUrl.short_url}`;
+      const url: string = `${baseUrl}/${data.shortenedUrl.short_url}`;
       setShortUrl(url);
     } catch (error: any) {
-      // Capture the error message to display to the user
       setError(error.message);
-      console.error(error);
+      console.error(error.message);
     }
   };
 
@@ -61,7 +61,6 @@ export default function Landing() {
               onChange={(e) => setUrlState(e.target.value)}
               className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               placeholder="Shorten"
-              required
             />
 
             <button
@@ -102,7 +101,7 @@ export default function Landing() {
                 onChange={(e) => setUrlState(e.target.value)}
                 className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="Shorten"
-                required
+                // required
               />
               <button
                 type="submit"
@@ -111,9 +110,7 @@ export default function Landing() {
                 Shorten
               </button>
             </div>
-            {error && (
-              <div className="m-2 text-red-500 capitalize">{error}</div>
-            )}
+            {error && <div className="m-2 text-red-500">{error}</div>}
           </form>
         )}
       </div>

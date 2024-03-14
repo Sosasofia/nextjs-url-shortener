@@ -1,30 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectMongoDB from "@/utils/connect-mongo";
 import Url from "@/models/url";
+import { isValidHttpUrl, makeShortUrl } from "@/utils/utils";
 
 export async function POST(req: NextRequest) {
+  const { url } = await req.json();
+  const isValid = isValidHttpUrl(url);
+
   try {
     await connectMongoDB();
-    const body = await req.json();
 
-    if (body.url) {
-      const short_url: string = makeShortUrl(4);
-
-      let newUrl = new Url({
-        original_url: body.url,
-        short_url,
-      });
-      const shortenUrl = await Url.create(newUrl);
-
+    if (!url || !isValid) {
       return NextResponse.json(
-        { shortenUrl, message: "Your url has been shorten" },
-        { status: 200 }
+        { message: "Url has not been set or is invalid." },
+        { status: 400 }
       );
     }
 
+    const short_url: string = makeShortUrl(4);
+
+    const shortenedUrl = await Url.create({
+      original_url: url,
+      short_url,
+    });
+
     return NextResponse.json(
-      { message: "Url has not been set" },
-      { status: 400 }
+      { shortenedUrl, message: "your url has been shortened." },
+      { status: 200 }
     );
   } catch (error) {
     return NextResponse.json({ message: error }, { status: 500 });
@@ -40,14 +42,3 @@ export async function GET() {
     return NextResponse.json({ error });
   }
 }
-
-const makeShortUrl = (length: any) => {
-  let result = "";
-  let characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-};
