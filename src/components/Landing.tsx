@@ -46,6 +46,8 @@ export default function Landing() {
   const copylink = () => {
     navigator.clipboard.writeText(shortUrl!);
     toast.success("Copy to clipboard!", { position: "top-center" });
+    setUrlState("");
+    setShortUrl(null);
     router.refresh();
   };
 
