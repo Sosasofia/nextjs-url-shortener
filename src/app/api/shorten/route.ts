@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(
-      { shortenedUrl, message: "your url has been shortened." },
+      { shortenedUrl, message: "Your url has been shortened." },
       { status: 200 }
     );
   } catch (error) {
