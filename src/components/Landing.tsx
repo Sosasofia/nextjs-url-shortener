@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function Landing() {
   const [urlState, setUrlState] = useState<string>("");
@@ -9,6 +11,7 @@ export default function Landing() {
   const [error, setError] = useState<string | null>(null);
 
   const baseUrl = process.env.NEXT_PUBLIC_URL;
+  const router = useRouter();
 
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -30,14 +33,20 @@ export default function Landing() {
       const data = await res.json();
       const url: string = `${baseUrl}/${data.shortenedUrl.short_url}`;
       setShortUrl(url);
+      toast.success(data.message, {
+        position: "top-center",
+      });
     } catch (error: any) {
-      setError(error.message);
-      console.error(error.message);
+      toast.error(error.message, {
+        position: "top-center",
+      });
     }
   };
 
-  const copylink = (e: React.FormEvent) => {
+  const copylink = () => {
     navigator.clipboard.writeText(shortUrl!);
+    toast.success("Copy to clipboard!", { position: "top-center" });
+    router.refresh();
   };
 
   return (
