@@ -2,15 +2,8 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
 
 export default function NavBar() {
-  const onClick = () => {
-    toast.info("Upcoming feature. Soon!", {
-      position: "top-center",
-    });
-  };
-
   return (
     <div className="sticky top-0 z-50 h-16">
       <header className="h-16 flex items-center">
@@ -20,7 +13,8 @@ export default function NavBar() {
           </Link>
           <div>
             {/* TODO dark/light mode switch */}
-            <button onClick={onClick}>
+            <button>
+              {/* TODO change icons */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -38,15 +32,11 @@ export default function NavBar() {
             </button>
           </div>
           <div>
-            <Link onClick={onClick} href={"#"} className="hover:underline">
-              Log in
-            </Link>
             <Link
-              onClick={onClick}
-              href={"#"}
+              href={"/sign-in"}
               className="bg-blue-500 ml-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
             >
-              Sign Up
+              Sign In
             </Link>
           </div>
         </div>
