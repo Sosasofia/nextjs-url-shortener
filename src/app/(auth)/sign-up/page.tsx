@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { MdOutlineAlternateEmail, MdOutlinePassword } from "react-icons/md";
+import { toast } from "sonner";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
@@ -36,7 +37,11 @@ export default function SignUp() {
       if (res.ok) {
         const form = e.target;
         form.reset();
-        router.push("/");
+        toast.success(data.message + "Please sign in to your account", {
+          position: "top-center",
+        });
+
+        router.push("/sign-in");
       } else {
         setError(data.error);
         console.log("User registration failed.");
