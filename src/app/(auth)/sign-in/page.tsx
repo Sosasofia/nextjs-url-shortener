@@ -5,11 +5,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { MdOutlineAlternateEmail, MdOutlinePassword } from "react-icons/md";
+import { toast } from "sonner";
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const router = useRouter();
 
@@ -17,7 +17,7 @@ export default function SignIn() {
     e.preventDefault();
 
     if (!email || !password) {
-      setError("All inputs are required");
+      toast.error("All inputs are required");
       return;
     }
 
@@ -29,13 +29,12 @@ export default function SignIn() {
       });
 
       if (res?.error) {
-        setError(res.error);
+        toast.error(res.error);
         return;
       }
 
-      if (res?.ok) {
-        router.replace("/");
-      }
+      toast.success("Login succesfull", { position: "top-right" });
+      router.replace("/dashboard");
     } catch (error) {
       console.log(error);
     }
@@ -55,7 +54,6 @@ export default function SignIn() {
             Don&apos;t have an account? Sign-up
           </Link>
         </div>
-
         <form onSubmit={handleSubmit}>
           <div className="flex items-center mb-6 md:mb-8">
             <MdOutlineAlternateEmail className="absolute ml-3" size={24} />
@@ -81,7 +79,6 @@ export default function SignIn() {
             Sign in
           </button>
         </form>
-        {error && <p className="text-lg text-center text-red-500">{error}</p>}
       </div>
     </div>
   );
