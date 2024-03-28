@@ -17,3 +17,11 @@ export const makeShortUrl = (length: any) => {
   }
   return result;
 };
+
+export const getValidUrl = (link: string) => {
+  if (link.indexOf("http://") == 0 || link.indexOf("https://") == 0) {
+    return link;
+  } else {
+    return `https://${link}`;
+  }
+};
