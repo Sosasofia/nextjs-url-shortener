@@ -17,6 +17,19 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const alreadyExist = await Url.exists({ original_url: url });
+    const savedUrl = await Url.findById(alreadyExist?._id);
+
+    if (alreadyExist) {
+      return NextResponse.json(
+        {
+          shortenedUrl: savedUrl,
+          message: "Your url has already been shortened.",
+        },
+        { status: 200 }
+      );
+    }
+
     const short_url: string = makeShortUrl(4);
 
     const shortenedUrl = await Url.create({
