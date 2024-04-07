@@ -22,7 +22,7 @@ async function connectMongoDB() {
   }
   try {
     cached.connection = await cached.promise;
-    console.log("Connected to MongoDB");
+    console.log("Connected to MongoDB.");
   } catch (e) {
     cached.promise = undefined;
     throw e;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import connectMongoDB from "@/utils/connect-mongo";
+import connectMongoDB from "@/lib/mongodb";
 import Url from "@/models/url";
 import { isValidHttpUrl, makeShortUrl } from "@/utils/utils";
 
