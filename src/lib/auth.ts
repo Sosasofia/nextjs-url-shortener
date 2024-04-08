@@ -2,6 +2,12 @@ import bcrypt from "bcrypt";
 import { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import connectMongoDB from "@/lib/mongodb";
+import type {
+  GetServerSidePropsContext,
+  NextApiRequest,
+  NextApiResponse,
+} from "next";
+import { getServerSession } from "next-auth";
 import User from "@/models/user";
 
 export const authConfig: NextAuthOptions = {
@@ -37,3 +43,13 @@ export const authConfig: NextAuthOptions = {
     strategy: "jwt",
   },
 };
+
+// Use it in server contexts
+export function auth(
+  ...args:
+    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
+    | [NextApiRequest, NextApiResponse]
+    | []
+) {
+  return getServerSession(...args, authConfig);
+}
