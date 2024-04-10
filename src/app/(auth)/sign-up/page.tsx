@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { MdOutlineAlternateEmail, MdOutlinePassword } from "react-icons/md";
 import { toast } from "sonner";
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
+  // const [error, setError] = useState<string | null>(null);
 
   const router = useRouter();
 
@@ -17,7 +19,7 @@ export default function SignUp() {
     e.preventDefault();
 
     if (!email || !password) {
-      setError("All inputs are required");
+      toast.error("All inputs are required");
       return;
     }
 
@@ -43,7 +45,7 @@ export default function SignUp() {
 
         router.push("/sign-in");
       } else {
-        setError(data.error);
+        toast.error(data.error);
         console.log("User registration failed.");
       }
     } catch (error) {
@@ -91,7 +93,31 @@ export default function SignUp() {
             Create
           </button>
         </form>
-        {error && <p className="text-lg text-center text-red-500">{error}</p>}
+
+        <div className="relative w-full flex flex-col justify-center">
+          <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+            <p className="mx-4 text-center">Or</p>
+          </div>
+        </div>
+
+        <div className="flex justify-center space-x-4">
+          <button
+            type="button"
+            className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
+            onClick={() => signIn("google")}
+          >
+            <div className="flex items-center justify-center">
+              <Image
+                src={"/images/icons/google.png"}
+                width="25"
+                height="25"
+                alt="Google"
+                className="mr-4"
+              />
+              Sign In with Google
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
