@@ -12,6 +12,7 @@ import type {
 import type { Adapter } from "next-auth/adapters";
 import { getServerSession } from "next-auth";
 import User from "@/models/user";
+import GoogleProvider from "next-auth/providers/google";
 
 export const authConfig: NextAuthOptions = {
   pages: {
@@ -41,6 +42,10 @@ export const authConfig: NextAuthOptions = {
 
         return user;
       },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
   session: {

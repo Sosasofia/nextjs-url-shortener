@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -79,6 +80,30 @@ export default function SignIn() {
             Sign in
           </button>
         </form>
+        <div className="relative w-full flex flex-col justify-center">
+          <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">
+            <p className="mx-4 text-center">Or</p>
+          </div>
+        </div>
+
+        <div className="flex justify-center space-x-4">
+          <button
+            type="button"
+            className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
+            onClick={() => signIn("google")}
+          >
+            <div className="flex items-center justify-center">
+              <Image
+                src={"/images/icons/google.png"}
+                width="25"
+                height="25"
+                alt="Google"
+                className="mr-4"
+              />
+              Sign In with Google
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
