@@ -1,10 +1,12 @@
 import Landing from "@/components/Landing";
-import Image from "next/image";
+import { getCurrentUser } from "@/lib/session";
 
-export default function Home() {
+export default async function Home() {
+  const user = await getCurrentUser();
+
   return (
     <div className="flex flex-col items-center justify-between p-12 h-full">
-      <Landing />
+      <Landing user={user} />
     </div>
   );
 }
