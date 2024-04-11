@@ -6,7 +6,7 @@ import { toast } from "sonner";
 const SignOutButton = () => {
   const signUserOut = async () => {
     try {
-      await signOut();
+      await signOut({ callbackUrl: "/" });
     } catch (error) {
       toast.error("Error signing out. Please try again");
     }
