@@ -90,7 +90,11 @@ export default function SignIn() {
           <button
             type="button"
             className="w-full block bg-white hover:bg-gray-100 focus:bg-gray-100 text-gray-900 font-semibold rounded-lg px-4 py-3 border border-gray-300"
-            onClick={() => signIn("google")}
+            onClick={() =>
+              signIn("google", {
+                callbackUrl: "/dashboard",
+              })
+            }
           >
             <div className="flex items-center justify-center">
               <Image
