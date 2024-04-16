@@ -1,15 +1,10 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { toast } from "sonner";
+import SignOutButton from "./buttons/SignOutButton";
+import { getCurrentUser } from "@/lib/session";
 
-export default function NavBar() {
-  const onClick = () => {
-    toast.info("Upcoming feature. Soon!", {
-      position: "top-center",
-    });
-  };
+export default async function NavBar() {
+  const user = await getCurrentUser();
 
   return (
     <div className="sticky top-0 z-50 h-16">
@@ -20,7 +15,8 @@ export default function NavBar() {
           </Link>
           <div>
             {/* TODO dark/light mode switch */}
-            <button onClick={onClick}>
+            <button>
+              {/* TODO change icons */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -38,16 +34,16 @@ export default function NavBar() {
             </button>
           </div>
           <div>
-            <Link onClick={onClick} href={"#"} className="hover:underline">
-              Log in
-            </Link>
-            <Link
-              onClick={onClick}
-              href={"#"}
-              className="bg-blue-500 ml-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
-            >
-              Sign Up
-            </Link>
+            {user ? (
+              <SignOutButton />
+            ) : (
+              <Link
+                href={"/sign-in"}
+                className="bg-blue-500 ml-4 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </header>
