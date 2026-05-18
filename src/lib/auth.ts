@@ -1,40 +1,43 @@
-import bcrypt from "bcrypt";
-import { NextAuthOptions } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import bcrypt from "bcryptjs";
 import clientPromise from "./mongoClient";
 import connectMongoDB from "@/lib/mongodb";
-import type {
-  GetServerSidePropsContext,
-  NextApiRequest,
-  NextApiResponse,
-} from "next";
-import type { Adapter } from "next-auth/adapters";
-import { getServerSession } from "next-auth";
 import User from "@/models/user";
-import GoogleProvider from "next-auth/providers/google";
 
-export const authConfig: NextAuthOptions = {
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  adapter: MongoDBAdapter(clientPromise),
   pages: {
     signIn: "/sign-in",
   },
-  adapter: MongoDBAdapter(clientPromise) as Adapter,
+  session: {
+    strategy: "jwt",
+  },
   providers: [
-    Credentials({
+    CredentialsProvider({
       name: "credentials",
-      credentials: {},
-
-      async authorize(credentials: any) {
-        const { email, password } = credentials;
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing credentials");
+        }
 
         await connectMongoDB();
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: credentials.email });
 
-        if (!user) {
+        if (!user || !user.password) {
           throw new Error("User does not exist");
         }
 
-        const passwordsMatch = await bcrypt.compare(password, user.password);
+        const passwordsMatch = await bcrypt.compare(
+          credentials.password as string,
+          user.password,
+        );
 
         if (!passwordsMatch) {
           throw new Error("Incorrect credentials");
@@ -48,26 +51,11 @@ export const authConfig: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  session: {
-    strategy: "jwt",
-  },
   callbacks: {
     redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`;
-      // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url;
       return baseUrl;
     },
   },
-};
-
-// Use it in server contexts
-export function auth(
-  ...args:
-    | [GetServerSidePropsContext["req"], GetServerSidePropsContext["res"]]
-    | [NextApiRequest, NextApiResponse]
-    | []
-) {
-  return getServerSession(...args, authConfig);
-}
+});

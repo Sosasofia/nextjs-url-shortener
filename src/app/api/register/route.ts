@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import connectMongoDB from "@/lib/mongodb";
 import User from "@/models/user";
 
@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     if (user) {
       return NextResponse.json(
         { error: "Email already in use." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   } catch (error) {
     return NextResponse.json(
       { message: "An error occurred while registering the user.", error },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
