@@ -9,16 +9,24 @@ const baseUrl = process.env.NEXT_PUBLIC_URL;
 
 export default function LinksTable() {
   const [links, setLinks] = useState<Link[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getLinks = async () => {
-      let allLinks = await fetch("/api/shorten", {
-        method: "GET",
-      });
-      let linksData = await allLinks.json();
+      try {
+        let allLinks = await fetch("/api/shorten", {
+          method: "GET",
+        });
+        let linksData = await allLinks.json();
 
-      if (allLinks) {
-        setLinks(linksData.data);
+        if (allLinks.ok) {
+          setLinks(linksData.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch links", error);
+        toast.error("Failed to load links");
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -65,47 +73,64 @@ export default function LinksTable() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              {links.map((link, index) => {
-                return (
-                  <tr
-                    key={index}
-                    className="hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                      <a href={link.original_url} target="_blank">
-                        {link.original_url}
-                      </a>
-                    </td>
-                    <td className="inline-flex gap-1 py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white">
-                      {link.short_url}
-                      <MdOutlineContentCopy
-                        title="Copy"
-                        onClick={() => copylink(link.short_url)}
-                        size={15}
-                        className="cursor-pointer my-auto"
-                      />
-                    </td>
-                    <td className="py-4 px-6 text-sm font-medium text-right whitespace-nowrap">
-                      <a
-                        href="#"
-                        onClick={onClick}
-                        className="text-blue-600 dark:text-blue-500 hover:underline"
-                      >
-                        Edit
-                      </a>
-                    </td>
-                    <td className="py-4 px-6 text-sm font-medium text-right whitespace-nowrap">
-                      <a
-                        href="#"
-                        onClick={onClick}
-                        className="text-red-600 hover:underline"
-                      >
-                        Delete
-                      </a>
-                    </td>
-                  </tr>
-                );
-              })}
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
+                    Loading your links...
+                  </td>
+                </tr>
+              ) : links.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="py-12 text-center">
+                    <p className="text-base font-medium text-gray-900 dark:text-white">No links found</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      You haven&apos;t shortened any URLs yet. Use the input above to create your first one!
+                    </p>
+                  </td>
+                </tr>
+              ) : (
+                links.map((link, index) => {
+                  return (
+                    <tr
+                      key={index}
+                      className="hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      <td className="py-4 px-6 text-sm font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <a href={link.original_url} target="_blank" rel="noreferrer">
+                          {link.original_url}
+                        </a>
+                      </td>
+                      <td className="inline-flex gap-1 py-4 px-6 text-sm font-medium text-gray-500 whitespace-nowrap dark:text-white">
+                        {link.short_url}
+                        <MdOutlineContentCopy
+                          title="Copy"
+                          onClick={() => copylink(link.short_url)}
+                          size={15}
+                          className="cursor-pointer my-auto"
+                        />
+                      </td>
+                      <td className="py-4 px-6 text-sm font-medium text-right whitespace-nowrap">
+                        <a
+                          href="#"
+                          onClick={onClick}
+                          className="text-blue-600 dark:text-blue-500 hover:underline"
+                        >
+                          Edit
+                        </a>
+                      </td>
+                      <td className="py-4 px-6 text-sm font-medium text-right whitespace-nowrap">
+                        <a
+                          href="#"
+                          onClick={onClick}
+                          className="text-red-600 hover:underline"
+                        >
+                          Delete
+                        </a>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
