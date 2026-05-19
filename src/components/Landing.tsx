@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function Landing() {
   return (
-    <div className="h-full w-full max-w-6xl flex place-items-center gap-8">
+    <div className="h-full w-full max-w-6xl mx-auto flex items-center justify-between gap-8 px-6">
       <div className="flex flex-col gap-y-8 w-full">
         <div className="flex flex-col gap-y-2">
           <p className="text-5xl">Create Short URL!</p>
