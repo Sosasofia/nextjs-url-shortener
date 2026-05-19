@@ -6,19 +6,27 @@ import { auth } from "@/lib/auth";
 import User from "@/models/user";
 
 export async function POST(req: NextRequest) {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json(
+      { error: "Unauthorized. You must be logged in to shorten links." },
+      { status: 401 },
+    );
+  }
+
   const { url } = await req.json();
   const isValid = isValidHttpUrl(url);
-  const authInfo = await auth();
 
   try {
     await connectMongoDB();
 
-    const user = await User.findOne({ email: authInfo?.user?.email });
+    const user = await User.findOne({ email: session.user.email });
 
     if (!url || !isValid) {
       return NextResponse.json(
         { message: "Url has not been set or is invalid." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -33,7 +41,7 @@ export async function POST(req: NextRequest) {
           shortenedUrl: savedUrl,
           message: "Your url has already been shortened.",
         },
-        { status: 200 }
+        { status: 200 },
       );
     }
 
@@ -47,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(
       { shortenedUrl, message: "Your url has been shortened." },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json({ message: error }, { status: 500 });
