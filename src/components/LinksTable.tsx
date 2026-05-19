@@ -2,37 +2,11 @@
 
 import { MdOutlineContentCopy } from "react-icons/md";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
 import { Link } from "@/utils/types";
 
 const baseUrl = process.env.NEXT_PUBLIC_URL;
 
-export default function LinksTable() {
-  const [links, setLinks] = useState<Link[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const getLinks = async () => {
-      try {
-        let allLinks = await fetch("/api/shorten", {
-          method: "GET",
-        });
-        let linksData = await allLinks.json();
-
-        if (allLinks.ok) {
-          setLinks(linksData.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch links", error);
-        toast.error("Failed to load links");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    getLinks();
-  }, []);
-
+export default function LinksTable({ initialLinks }: { initialLinks: Link[] }) {
   const copylink = (shortUrl: string) => {
     navigator.clipboard.writeText(`${baseUrl}/${shortUrl}`);
     toast.success("Copy to clipboard!", { position: "top-center" });
@@ -73,13 +47,7 @@ export default function LinksTable() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={4} className="py-12 text-center text-sm text-gray-500 dark:text-gray-400">
-                    Loading your links...
-                  </td>
-                </tr>
-              ) : links.length === 0 ? (
+              {initialLinks.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center">
                     <p className="text-base font-medium text-gray-900 dark:text-white">No links found</p>
@@ -89,7 +57,7 @@ export default function LinksTable() {
                   </td>
                 </tr>
               ) : (
-                links.map((link, index) => {
+                initialLinks.map((link, index) => {
                   return (
                     <tr
                       key={index}

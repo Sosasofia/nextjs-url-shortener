@@ -1,9 +1,12 @@
 import { getCurrentUser } from "@/lib/session";
 import LinksTable from "@/components/LinksTable";
 import InputForm from "@/components/ui/InputForm";
+import Url from "@/models/url";
 
 export default async function Dashboard() {
   const user = await getCurrentUser();
+  const rawLinks = await Url.find({ user_email: user?.email }).lean();
+  const initialLinks = JSON.parse(JSON.stringify(rawLinks));
 
   return (
     <div className="flex flex-col items-center justify-between p-12 h-full">
@@ -15,7 +18,7 @@ export default async function Dashboard() {
           </div>
           <InputForm />
         </div>
-        <LinksTable />
+        <LinksTable initialLinks={initialLinks} />
       </div>
     </div>
   );
