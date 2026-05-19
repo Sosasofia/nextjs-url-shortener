@@ -11,7 +11,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col items-center justify-between p-12 h-full">
-      <Landing user={user} />
+      <Landing />
     </div>
   );
 }
