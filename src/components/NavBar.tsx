@@ -9,14 +9,13 @@ export default async function NavBar() {
   return (
     <div className="sticky top-0 z-50 h-16">
       <header className="h-16 flex items-center">
-        <div className="w-full mx-auto max-w-screen-xl p-6 flex items-center justify-between border-b border-gray-300">
+        <div className="w-full mx-auto max-w-screen-xl p-6 backdrop-blur-md flex items-center justify-between border-b border-gray-300">
           <Link href="/" className="flex ">
             <Image src="/link.svg" width={30} height={30} alt="url icon" />
           </Link>
           <div>
             {/* TODO dark/light mode switch */}
             <button>
-              {/* TODO change icons */}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
