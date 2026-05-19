@@ -1,11 +1,11 @@
-import connectMongoDB from "@/lib/mongodb";
-import User from "@/models/user";
 import { MongoDBAdapter } from "@auth/mongodb-adapter";
 import bcrypt from "bcryptjs";
 import NextAuth, { CredentialsSignin } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
-import clientPromise from "./mongoClient";
+import { connectMongoDB, clientPromise } from "./mongodb";
+import User from "@/models/user";
+import { authConfig } from "./auth.config";
 
 class InvalidLoginError extends CredentialsSignin {
   code = "Invalid email or password";
@@ -15,13 +15,8 @@ class MissingCredentialsError extends CredentialsSignin {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   adapter: MongoDBAdapter(clientPromise),
-  pages: {
-    signIn: "/sign-in",
-  },
-  session: {
-    strategy: "jwt",
-  },
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -36,6 +31,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         await connectMongoDB();
         const user = await User.findOne({ email: credentials.email });
+
         if (!user || !user.password) {
           throw new InvalidLoginError();
         }
@@ -57,11 +53,4 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
-  callbacks: {
-    redirect({ url, baseUrl }) {
-      if (url.startsWith("/")) return `${baseUrl}${url}`;
-      else if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
-    },
-  },
 });

@@ -2,9 +2,13 @@ import { getCurrentUser } from "@/lib/session";
 import LinksTable from "@/components/LinksTable";
 import InputForm from "@/components/ui/InputForm";
 import Url from "@/models/url";
+import { connectMongoDB } from "@/lib/mongodb";
 
 export default async function Dashboard() {
   const user = await getCurrentUser();
+
+  await connectMongoDB();
+
   const rawLinks = await Url.find({ user_email: user?.email }).lean();
   const initialLinks = JSON.parse(JSON.stringify(rawLinks));
 
