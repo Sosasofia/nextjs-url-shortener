@@ -1,26 +1,27 @@
 "use client";
 
-import Link from "next/link";
+import { signIn } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 import { MdOutlineAlternateEmail, MdOutlinePassword } from "react-icons/md";
 import { toast } from "sonner";
-
-const baseUrl = process.env.NEXTAUTH_URL;
 
 export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (!email || !password) {
       toast.error("All inputs are required");
+      setIsLoading(false);
       return;
     }
 
@@ -40,7 +41,7 @@ export default function SignUp() {
       if (res.ok) {
         const form = e.target;
         form.reset();
-        toast.success(data.message + "Please sign in to your account", {
+        toast.success(data.message + " Please sign in to your account", {
           position: "top-center",
         });
 
@@ -51,6 +52,9 @@ export default function SignUp() {
       }
     } catch (error) {
       console.log("Error during registration: ", error);
+      toast.error("An unexpected error occurred");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -90,8 +94,11 @@ export default function SignUp() {
               placeholder="Password"
             />
           </div>
-          <button className="w-full inline-flex items-center justify-center h-12 tracking-wide transition duration-200 focus:shadow-outline focus:outline-none active:translate-y-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-            Create
+          <button
+            disabled={isLoading}
+            className="w-full inline-flex items-center justify-center h-12 tracking-wide transition duration-200 focus:shadow-outline focus:outline-none active:translate-y-1 bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded-full"
+          >
+            {isLoading ? "Creating..." : "Create Account"}
           </button>
         </form>
 

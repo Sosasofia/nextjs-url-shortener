@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { MdOutlineAlternateEmail, MdOutlinePassword } from "react-icons/md";
 import { toast } from "sonner";
@@ -11,11 +11,22 @@ import { toast } from "sonner";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const urlError = searchParams.get("error");
+
+  useEffect(() => {
+    if (urlError) {
+      toast.error(urlError, { position: "top-right" });
+      router.replace("/sign-in", undefined);
+    }
+  }, [urlError, router]);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setIsLoading(true);
 
     if (!email || !password) {
       toast.error("All inputs are required");
@@ -30,14 +41,21 @@ export default function SignIn() {
       });
 
       if (res?.error) {
-        toast.error(res.error);
+        const errorMessage = res.error === "CredentialsSignin"
+          ? "Invalid email or password. Please try again."
+          : "Something went wrong.";
+
+        toast.error(errorMessage);
         return;
       }
 
-      toast.success("Login succesfull", { position: "top-right" });
+      toast.success("Login successful");
       router.replace("/dashboard");
     } catch (error) {
       console.log(error);
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,9 +94,11 @@ export default function SignIn() {
               placeholder="Password"
             />
           </div>
-          <button className="w-full inline-flex items-center justify-center h-12 tracking-wide transition duration-200 focus:shadow-outline focus:outline-none active:translate-y-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-            Sign in
+
+          <button disabled={isLoading} className="w-full inline-flex items-center justify-center h-12 tracking-wide transition duration-200 focus:shadow-outline focus:outline-none active:translate-y-1 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+            {isLoading ? "Logging in..." : "Sign In"}
           </button>
+
         </form>
         <div className="relative w-full flex flex-col justify-center">
           <div className="my-4 flex items-center before:mt-0.5 before:flex-1 before:border-t before:border-neutral-300 after:mt-0.5 after:flex-1 after:border-t after:border-neutral-300">

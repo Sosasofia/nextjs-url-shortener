@@ -1,11 +1,18 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import GoogleProvider from "next-auth/providers/google";
-import { MongoDBAdapter } from "@auth/mongodb-adapter";
-import bcrypt from "bcryptjs";
-import clientPromise from "./mongoClient";
 import connectMongoDB from "@/lib/mongodb";
 import User from "@/models/user";
+import { MongoDBAdapter } from "@auth/mongodb-adapter";
+import bcrypt from "bcryptjs";
+import NextAuth, { CredentialsSignin } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
+import clientPromise from "./mongoClient";
+
+class InvalidLoginError extends CredentialsSignin {
+  code = "Invalid email or password";
+}
+class MissingCredentialsError extends CredentialsSignin {
+  code = "Please provide both email and password";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: MongoDBAdapter(clientPromise),
@@ -24,14 +31,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing credentials");
+          throw new MissingCredentialsError();
         }
 
         await connectMongoDB();
         const user = await User.findOne({ email: credentials.email });
-
         if (!user || !user.password) {
-          throw new Error("User does not exist");
+          throw new InvalidLoginError();
         }
 
         const passwordsMatch = await bcrypt.compare(
@@ -40,7 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
 
         if (!passwordsMatch) {
-          throw new Error("Incorrect credentials");
+          throw new InvalidLoginError();
         }
 
         return user;
