@@ -51,6 +51,7 @@ export default function SignIn() {
 
       toast.success("Login successful");
       router.replace("/dashboard");
+      router.refresh();
     } catch (error) {
       console.log(error);
       toast.error("Something went wrong");
